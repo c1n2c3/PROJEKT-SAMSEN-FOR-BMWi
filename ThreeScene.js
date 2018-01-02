@@ -43,7 +43,7 @@ function setUpView(){
 	scene.add(threeCamera);
 
   light = new THREE.DirectionalLight( 0xffffff, 1 , 0, 0, -.5);
-  light.position.z = 300;
+  light.position.z = 800;
   scene.add(light);
   light2 = new THREE.AmbientLight( 0xffffff, 1);
   scene.add(light2);
@@ -79,8 +79,8 @@ function updateStats(){
   stats2.update();
 }
 function onWindowResize() {
-  //threeCamera.position.x = window.innerWidth/2;
-	//threeCamera.position.y = window.innerHeight/2;
+  threeCamera.position.x = window.innerWidth/2;
+	threeCamera.position.y = window.innerHeight/2;
   threeCamera.aspect = window.innerWidth / window.innerHeight;
   threeCamera.updateProjectionMatrix();
   renderer.setSize( window.innerWidth, window.innerHeight );
