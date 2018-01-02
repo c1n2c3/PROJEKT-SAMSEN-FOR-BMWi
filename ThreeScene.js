@@ -79,8 +79,8 @@ function updateStats(){
   stats2.update();
 }
 function onWindowResize() {
-  threeCamera.position.x = window.innerWidth/2;
-	threeCamera.position.y = window.innerHeight/2;
+  //threeCamera.position.x = window.innerWidth/2;
+	//threeCamera.position.y = window.innerHeight/2;
   threeCamera.aspect = window.innerWidth / window.innerHeight;
   threeCamera.updateProjectionMatrix();
   renderer.setSize( window.innerWidth, window.innerHeight );
