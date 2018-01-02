@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8"/>
+	<title>Main</title>
+	<style>
+		body {
+			margin:0;
+			background: grey;
+			overflow: hidden;
+		}
+		canvas {
+			width: 100%;
+			height: 100%
+		}
+    #p5Div, #threejsDiv {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      #p5Div {
+        z-index: 1;
+      }
+	</style>
+</head>
+
+<body>
+  <div id='stats'></div>
+  <div id='p5Div'></div>
+  <div id='threejsDiv'></div>
+
+	<script type="x-shader/x-vertex" id="vertexShader">
+
+		attribute vec4 colors;
+		attribute vec3 pos;
+		varying vec4 varyingColors;
+
+		void main() {
+			vec3 p = position;
+			//p.x += 0.1*(pos.x - p.x);
+			//p.y += 0.1*(pos.y - p.y);
+			//p.z += 0.1*(pos.z - p.z);
+			vec4 modelViewPosition = modelViewMatrix * vec4(p, 1);
+			gl_Position = projectionMatrix * modelViewPosition;
+			varyingColors = colors;
+		}
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentShader">
+		varying vec4 varyingColors;
+		void main() {
+			gl_FragColor = vec4(varyingColors.x, varyingColors.y, varyingColors.z, varyingColors.w);
+		}
+	</script>
+
+	<script type="text/javascript" , src="myFunctions.js"></script>
+	<script type="text/javascript" , src="three.js"></script>
+	<script type="text/javascript" , src="ThreeScene.js"></script>
+	<script type="text/javascript" , src="Stats.js"></script>
+
+  <script type="text/javascript" , src="p5.min.js"></script>
+  <script type="text/javascript" , src="Button.js"></script>
+  <script type="text/javascript" , src="Mode.js"></script>
+	<script type="text/javascript" , src="Triangle.js"></script>
+  <script type="text/javascript">
+
+////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////// THREE.JS
+////////////////////////////////////////////////////////////////////
+	init();
+	animate();
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////// P5.JS
+////////////////////////////////////////////////////////////////////
+
+	var labelFont;
+  var activeMode;
+  var mouse;
+
+	function preload(){
+////////////////////////////////////////////////////////////////////!!!!!CACHE
+    labelFont = loadFont('fonts/Formular-Regular.otf');
+	}
+	function setup() {
+    var c = createCanvas(windowWidth, windowHeight);
+    c.parent('p5Div');
+    setModes(9);
+		activeMode = modes[modeIndex];
+  }
+  function draw(){
+//////////////////////////////////////////////////////////////// UPDATE THREE
+		if (activeMode.counter < 100){
+			backgroundMesh.material.color.r += .05 * (activeMode.grey - backgroundMesh.material.color.r);
+			backgroundMesh.material.color.g += .05 * (activeMode.grey - backgroundMesh.material.color.g);
+			backgroundMesh.material.color.b += .05 * (activeMode.grey - backgroundMesh.material.color.b);
+		}
+		if(anyButtonClicked(modes[2].buttons)){
+			frameY_Mesh.material.color.r += 0.1 * (modes[2].buttons[clickedButton(modes[2].buttons)].col.r - frameY_Mesh.material.color.r);
+			frameY_Mesh.material.color.g += 0.1 * (modes[2].buttons[clickedButton(modes[2].buttons)].col.g - frameY_Mesh.material.color.g);
+			frameY_Mesh.material.color.b += 0.1 * (modes[2].buttons[clickedButton(modes[2].buttons)].col.b - frameY_Mesh.material.color.b);
+		}
+
+		if(modeIndex > 1 && modes[2].counter > 10){
+			frameY_Mesh.material.opacity += 0.1 * (1 - frameY_Mesh.material.opacity);
+		}else if (modeIndex <= 1) {
+			frameY_Mesh.material.opacity += 0.1 * (0 - frameY_Mesh.material.opacity);
+		}
+
+/////////////////////////////////////////////////////////////////// UPDATE P5
+    mouse = new p5.Vector(mouseX, mouseY);
+    activeMode = modes[modeIndex];
+    updateModes(modeIndex, mouse);
+		updateTrianglesOpacity();
+		//updateTrianglesPosition(modeIndex);
+
+		if (windowWidth * .125 < 220) buttonSpacing = windowWidth * .125;
+	  buttonY = windowHeight * .75;
+		activeMode.updateButtons(mouse, modeIndex);
+///////////////////////////////////////////////////////////////////// DRAW P5
+    clear();
+    displayModes(modeIndex);
+  }
+	function windowResized() {
+  	resizeCanvas(windowWidth, windowHeight);
+	}
+	function mousePressed(){
+		//console.log(framePositions);
+	}
+	function keyPressed(){
+	}
+	function mouseReleased(){
+    clickModesButtons();
+	}
+	function mouseMoved(){
+		//console.log(modeIndex);
+	}
+  function keyPressed(){
+    if (keyCode === LEFT_ARROW && modeIndex > 0) modeIndex--;
+    if (keyCode === RIGHT_ARROW && modeIndex < modes.length-1) modeIndex++;
+    //console.log(modeIndex);
+  }
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+  </script>
+
+</body>
+</html>
